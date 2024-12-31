@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- displays site properly based on user's device -->
+
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon-32x32.png">
+  <link rel="stylesheet" href="style.css">
+
+  <title>Frontend Mentor | Product list with cart</title>
+
+  <!-- Feel free to remove these styles or customise in your own stylesheet 👍 -->
+  <style>
+    .attribution {
+      font-size: 11px;
+      text-align: center;
+    }
+
+    .attribution a {
+      color: hsl(228, 45%, 44%);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="main-container">
+    <div class="products-container">
+
+    </div>
+
+    <div class="cart-container">
+      <p>Your cart 0</p>
+      <div class="cart-image-text-container">
+        <img class="empty-cart-image" src="./assets/images/illustration-empty-cart.svg" alt="empty-cart" />
+        <p>Your added items will appear here</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="attribution">
+    Challenge by <a href="https://www.frontendmentor.io?ref=challenge">Frontend Mentor</a>.
+    Coded by <a href="#">Your Name Here</a>.
+  </div>
+
+
+  <script>
+    const productsContainer = document.querySelector(".products-container");
+
+    let productList = {};
+
+    async function fetchProducts() {
+      try {
+        const res = await fetch("data.json");
+        if (!res.ok) {
+          throw new Error("Network error");
+        }
+        productList = await res.json();
+      }
+      catch (error) {
+        console.log(error);
+      }
+    }
+
+    async function displayProducts() {
+      await fetchProducts();
+      console.log(productList);
+      productList.map((product) => {
+        const productDiv = document.createElement("div");
+        const imgCartDiv = document.createElement("div");
+        const textDetailDiv = document.createElement("div");
+
+        productDiv.classList.add("product-div");
+        imgCartDiv.classList.add("img-cart-div");
+        textDetailDiv.classList.add("text-detail-div");
+
+        const productImage = document.createElement("img");
+        productImage.classList.add("product-image");
+
+        const cartButton = document.createElement("button");
+        cartButton.classList.add("addToCart-button");
+
+        const productCategory = document.createElement("p");
+        productCategory.classList.add("category");
+
+        const productName = document.createElement("strong");
+        productName.classList.add("name");
+
+        const productPrice = document.createElement("p");
+        productPrice.classList.add("price");
+
+        productImage.src = product.image.desktop;
+        cartButton.innerText = "Add to Cart"
+        productCategory.innerText = product.category;
+        productName.innerText = product.name;
+        productPrice.innerText = `$${product.price.toFixed(2)}`;
+
+        productsContainer.append(productDiv);
+        imgCartDiv.append(productImage);
+        imgCartDiv.append(cartButton);
+        productDiv.append(imgCartDiv);
+        textDetailDiv.append(productCategory);
+        textDetailDiv.append(productName);
+        textDetailDiv.append(productPrice);
+        productDiv.append(textDetailDiv);
+
+        cartButton.addEventListener("click", function () {
+          const cartItemDiv = document.createElement("div");
+          cartItemDiv.classList.add("cart-item-div");
+
+          const cartItemDetailsDiv = document.createElement("div");
+          cartItemDiv.append(cartItemDetailsDiv);
+
+
+          const cartProductName = document.createElement("p");
+          cartProductName.innerText = product.name;
+          cartProductName.classList.add("name");
+          cartItemDetailsDiv.append(cartProductName);
+
+          const priceQuantityDiv = document.createElement("div");
+          priceQuantityDiv.classList.add("cart-price-quantity-div");
+          cartItemDetailsDiv.append(priceQuantityDiv);
+
+          const cartItemRemoverDiv = document.createElement("div");
+          cartItemDiv.append(cartItemRemoverDiv);
+          const removerLogo = document.createElement("img");
+          removerLogo.src = "./assets/images/icon-remove-item.svg";
+          cartItemRemoverDiv.append(removerLogo);
+
+
+
+          const cartProductQuantity = document.createElement("span");
+          cartProductQuantity.innerText = "1×";
+          cartProductQuantity.style.color = "hsl(14, 86%, 42%)";
+          cartProductQuantity.style.fontWeight = "bold"
+          priceQuantityDiv.append(cartProductQuantity);
+
+          const cartProductPrice = document.createElement("span");
+          cartProductPrice.innerText = `@${product.price.toFixed(2)}`;
+          cartProductPrice.style.color = "hsl(7, 20%, 60%)";
+          priceQuantityDiv.append(cartProductPrice);
+
+          const cartProductTotalPrice = document.createElement("span");
+          const quantity = parseFloat(cartProductQuantity.innerText);
+
+          const price = parseFloat(cartProductPrice.innerText.slice(1));
+          console.log(typeof price);
+          const totalPrice = quantity * price;
+          cartProductTotalPrice.innerText = totalPrice.toFixed(2);
+          cartProductTotalPrice.style.fontWeight = "bold";
+          cartProductTotalPrice.style.color = "hsl(12, 20%, 44%)";
+          priceQuantityDiv.append(cartProductTotalPrice);
+
+          //cart-image-text-container make it display none to show cart product
+          const cartImageText = document.querySelector(".cart-image-text-container");
+          cartImageText.style.display = "none";
+
+          //append cartItemDiv to cart-container
+          const cartContainer = document.querySelector(".cart-container");
+          cartContainer.append(cartItemDiv);
+
+        });
+      })
+    }
+
+    displayProducts();
+
+  </script>
+
+</body>
+
+</html>
